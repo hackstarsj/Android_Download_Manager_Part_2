@@ -1,0 +1,2 @@
+rootProject.name='Android_Download_Manager'
+include ':app'
