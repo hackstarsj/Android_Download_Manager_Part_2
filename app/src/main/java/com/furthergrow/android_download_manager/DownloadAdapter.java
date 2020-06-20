@@ -39,7 +39,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView file_title;
         TextView file_size;
         ProgressBar file_progress;
-        Button pause_resume;
+        Button pause_resume,sharefile;
         TextView file_status;
         RelativeLayout main_rel;
 
@@ -51,6 +51,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             file_progress=itemView.findViewById(R.id.file_progress);
             pause_resume=itemView.findViewById(R.id.pause_resume);
             main_rel=itemView.findViewById(R.id.main_rel);
+            sharefile=itemView.findViewById(R.id.sharefile);
 
         }
     }
@@ -117,6 +118,13 @@ public class DownloadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             @Override
             public void onClick(View v) {
                 clickListener.onCLickItem(downloadModel.getFile_path());
+            }
+        });
+
+        downloadViewHolder.sharefile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onShareClick(downloadModel);
             }
         });
 

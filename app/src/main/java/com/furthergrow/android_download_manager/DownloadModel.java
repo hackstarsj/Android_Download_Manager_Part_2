@@ -15,6 +15,8 @@ public class DownloadModel extends RealmObject {
     String file_size;
     boolean is_paused;
 
+
+
     public long getId() {
         return id;
     }

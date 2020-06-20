@@ -19,4 +19,10 @@
     <external-files-path
         name="my_docs"
         path="docs" />
+    <external-path
+        name="storage"
+        path="." />
+    <root-path
+        name="storage"
+        path="storage/"/>
 </paths>

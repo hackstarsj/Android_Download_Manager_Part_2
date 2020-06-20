@@ -58,15 +58,27 @@
                     android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="-70dp"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
         <Button
             android:id="@+id/pause_resume"
             android:text="PAUSE"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="-70dp"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:padding="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="30dp"/>
+            <Button
+                android:id="@+id/sharefile"
+                android:text="SHARE"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:padding="0dp"
+                android:layout_height="30dp"/>
+        </LinearLayout>
     </LinearLayout>
         <View
             android:layout_below="@id/line1"

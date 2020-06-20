@@ -30,14 +30,17 @@ import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.annotations.PrimaryKey;
 
 public class MainActivity extends AppCompatActivity implements ItemClickListener {
 
@@ -78,8 +81,61 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         data_list.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         data_list.setAdapter(downloadAdapter);
 
+        Intent intent=getIntent();
+        if(intent!=null){
+            String action=intent.getAction();
+            String type=intent.getType();
+            if(Intent.ACTION_SEND.equals(action) && type!=null){
+                if(type.equalsIgnoreCase("text/plain")){
+                    handleTextData(intent);
+                }
+                else if(type.startsWith("image/")){
+                    handleImage(intent);
+                }
+                else if(type.equalsIgnoreCase("application/pdf")){
+                    handlePdfFile(intent);
+                }
+            }
+            else if(Intent.ACTION_SEND_MULTIPLE.equals(action) && type!=null){
+                if(type.startsWith("image/")){
+                    handleMultipleImage(intent);
+                }
+            }
+        }
 
     }
+
+    private void handlePdfFile(Intent intent) {
+        Uri pdffile=intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if(pdffile!=null) {
+            Log.d("Pdf File Path : ", "" + pdffile.getPath());
+        }
+    }
+
+    private void handleImage(Intent intent) {
+        Uri image=intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if(image!=null) {
+            Log.d("Image File Path : ", "" + image.getPath());
+        }
+    }
+
+    private void handleTextData(Intent intent) {
+        String  textdata=intent.getStringExtra(Intent.EXTRA_TEXT);
+        if(textdata!=null) {
+            Log.d("Text Data : ", "" + textdata);
+            downloadFile(textdata);
+        }
+    }
+
+    private void handleMultipleImage(Intent intent) {
+        ArrayList<Uri> imageList=intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if(imageList!=null) {
+            for (Uri uri : imageList) {
+                Log.d("Path ",""+uri.getPath());
+            }
+        }
+    }
+
 
     private void showInputDialog(){
         AlertDialog.Builder al=new AlertDialog.Builder(MainActivity.this);
@@ -191,6 +247,40 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public void onCLickItem(String file_path) {
         Log.d("File Path : ",""+file_path);
         openFile(file_path);
+    }
+
+    @Override
+    public void onShareClick(DownloadModel downloadModel) {
+        File file=new File(downloadModel.getFile_path().replaceAll("file:///",""));
+        Log.d("File Path",""+file.getAbsolutePath());
+        MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
+        String ext=MimeTypeMap.getFileExtensionFromUrl(file.getName());
+        String type=mimeTypeMap.getExtensionFromMimeType(ext);
+
+        if(type==null){
+            type="*/*";
+        }
+
+        try{
+            Intent intent=new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT,"Sharing File from File Downloader");
+
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri path=FileProvider.getUriForFile(MainActivity.this,"com.furthergrow.android_download_manager",file);
+                intent.putExtra(Intent.EXTRA_STREAM,path);
+            }
+            else{
+                intent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
+            }
+            intent.setType("*/*");
+            startActivity(intent);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(this, "No Activity Availabe to Handle File", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public class DownloadStatusTask extends AsyncTask<String,String,String>{
